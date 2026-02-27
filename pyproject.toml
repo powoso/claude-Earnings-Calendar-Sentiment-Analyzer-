@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "earnings-brief"
+version = "1.0.0"
+description = "Pre-earnings brief generator: pulls upcoming earnings, scrapes news/sentiment, and uses Claude to generate actionable briefs."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "yfinance>=0.2.30",
+    "anthropic>=0.39.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "feedparser>=6.0.0",
+    "rich>=13.7.0",
+    "python-dateutil>=2.8.0",
+    "praw>=7.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "responses>=0.25.0",
+]
+
+[project.scripts]
+earnings-brief = "earnings_brief.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
