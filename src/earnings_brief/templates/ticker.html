@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}{{ ticker }} — Earnings Brief{% endblock %}
+
+{% block content %}
+<!-- Back link -->
+<a href="/" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-accent-blue transition-colors mb-6 group">
+    <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to Dashboard
+</a>
+
+<!-- Ticker Header -->
+<section id="ticker-header" class="hero-gradient rounded-2xl p-8 mb-8 relative">
+    <div class="relative z-10">
+        <div class="flex items-center gap-4 mb-2">
+            <h1 class="text-4xl font-black gradient-text">{{ ticker }}</h1>
+            <span id="sentiment-badge" class="badge badge-neutral hidden">LOADING</span>
+        </div>
+        <p id="company-name" class="text-gray-400 text-lg">Loading company info&hellip;</p>
+        <p id="earnings-date" class="text-gray-500 text-sm mt-1"></p>
+    </div>
+</section>
+
+<!-- KPI metrics -->
+<section id="kpi-metrics" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="metric-card"><div class="metric-label">EPS Estimate</div><div class="metric-value" id="kpi-eps">&mdash;</div></div>
+    <div class="metric-card"><div class="metric-label">Revenue Estimate</div><div class="metric-value" id="kpi-rev">&mdash;</div></div>
+    <div class="metric-card"><div class="metric-label">Sentiment Score</div><div class="metric-value" id="kpi-sentiment">&mdash;</div><div class="metric-delta neutral" id="kpi-sentiment-label"></div></div>
+    <div class="metric-card"><div class="metric-label">Avg Earnings Move</div><div class="metric-value" id="kpi-avg-move">&mdash;</div></div>
+</section>
+
+<!-- Loading -->
+<div id="research-loading" class="glass-card p-12 text-center">
+    <div class="spinner mx-auto mb-4"></div>
+    <p class="text-gray-400 text-sm font-medium" id="loading-text">Researching {{ ticker }}&hellip; Fetching news, sentiment, and history.</p>
+</div>
+
+<!-- Content (hidden until loaded) -->
+<div id="research-content" class="hidden fade-in">
+    <!-- Tabs -->
+    <div class="flex border-b border-white/10 mb-6 overflow-x-auto">
+        <button class="tab-btn active" onclick="switchTab('sentiment')">&#x1f4ca; Sentiment</button>
+        <button class="tab-btn" onclick="switchTab('historical')">&#x1f4c8; Historical</button>
+        <button class="tab-btn" onclick="switchTab('news')">&#x1f4f0; News</button>
+        <button class="tab-btn" onclick="switchTab('brief')">&#x1f4dd; AI Brief</button>
+    </div>
+
+    <!-- Tab: Sentiment -->
+    <div id="tab-sentiment" class="tab-panel">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-card p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Sentiment Distribution</h3>
+                <div id="chart-sentiment-donut" style="height: 320px;"></div>
+            </div>
+            <div class="glass-card p-6">
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Post Counts</h3>
+                <div id="chart-sentiment-bar" style="height: 320px;"></div>
+            </div>
+        </div>
+        <div id="sentiment-sources" class="mt-4 text-sm text-gray-500"></div>
+        <div id="sample-posts" class="mt-6 hidden">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Sample Social Posts</h3>
+            <div id="sample-posts-list" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Historical -->
+    <div id="tab-historical" class="tab-panel hidden">
+        <div class="glass-card p-6 mb-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Earnings Reactions by Quarter</h3>
+            <div id="chart-historical" style="height: 400px;"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="historical-stats"></div>
+        <div class="glass-card overflow-hidden">
+            <table class="data-table" id="historical-table">
+                <thead>
+                    <tr>
+                        <th>Quarter</th>
+                        <th class="text-right">EPS Est.</th>
+                        <th class="text-right">EPS Actual</th>
+                        <th class="text-right">Surprise %</th>
+                        <th class="text-right">Next-Day Move</th>
+                    </tr>
+                </thead>
+                <tbody id="historical-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab: News -->
+    <div id="tab-news" class="tab-panel hidden">
+        <div id="news-list" class="space-y-3"></div>
+        <div id="news-empty" class="glass-card p-8 text-center text-gray-500 hidden">
+            No recent news headlines found for {{ ticker }}.
+        </div>
+    </div>
+
+    <!-- Tab: Brief -->
+    <div id="tab-brief" class="tab-panel hidden">
+        <div id="brief-placeholder" class="glass-card p-10 text-center">
+            <div class="text-4xl mb-4">&#x1f916;</div>
+            <h3 class="text-xl font-bold text-gray-300 mb-2">Generate Pre-Earnings Brief</h3>
+            <p class="text-gray-500 max-w-lg mx-auto mb-6">
+                Claude will analyze all gathered research data &mdash; news, sentiment, and historical reactions &mdash;
+                to produce a comprehensive pre-earnings brief.
+            </p>
+            <button onclick="generateBrief('{{ ticker }}')" class="btn-primary text-lg px-8 py-3" id="generate-btn">
+                &#x1f680; Generate Brief with Claude
+            </button>
+        </div>
+        <div id="brief-loading" class="glass-card p-12 text-center hidden">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-400 text-sm font-medium">Claude is analyzing the data&hellip; This may take 15&ndash;30 seconds.</p>
+        </div>
+        <div id="brief-result" class="hidden">
+            <div class="glass-card p-8">
+                <div id="brief-content" class="brief-content"></div>
+            </div>
+            <div class="flex gap-3 mt-4">
+                <button onclick="downloadBrief('{{ ticker }}')" class="btn-secondary flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download Markdown
+                </button>
+                <button onclick="generateBrief('{{ ticker }}')" class="btn-secondary flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Regenerate
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ticker.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => initTickerPage('{{ ticker }}'));
+</script>
+{% endblock %}

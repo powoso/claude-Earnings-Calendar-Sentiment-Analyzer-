@@ -1,10 +1,11 @@
 # Earnings Calendar Sentiment Analyzer
 
-A web dashboard and CLI tool that pulls upcoming earnings dates, scrapes recent news headlines and social sentiment for each ticker, and uses Claude to generate a pre-earnings brief with expected move, analyst consensus, key risks, and historical earnings reactions.
+A beautiful web dashboard and CLI tool that pulls upcoming earnings dates, scrapes recent news headlines and social sentiment for each ticker, and uses Claude to generate a pre-earnings brief with expected move, analyst consensus, key risks, and historical earnings reactions.
 
 ## Features
 
-- **Interactive Web Dashboard** — Streamlit-powered UI with dark theme, Plotly charts, and real-time research
+- **Beautiful Web Dashboard** — Dark-themed financial UI with glass-morphism cards, Plotly charts, and smooth animations
+- **Streamlit Dashboard** — Alternative lightweight dashboard interface
 - **Earnings Calendar** — Scan 30+ large-cap tickers for upcoming earnings within a configurable date range
 - **Multi-Source News** — Headlines aggregated from Google News, Yahoo Finance, Finviz, and NewsAPI
 - **Social Sentiment** — Bullish/bearish scoring from Reddit (r/wallstreetbets, r/stocks, r/investing) and StockTwits
@@ -13,25 +14,40 @@ A web dashboard and CLI tool that pulls upcoming earnings dates, scrapes recent 
 - **Rich CLI** — Terminal interface with scan, brief, and calendar commands
 - **Export** — Download briefs as Markdown files from the UI or CLI
 
-## Web Dashboard
+## Web App
 
-The Streamlit dashboard provides a visual interface with:
+The Flask-based web app provides a polished, Bloomberg-inspired dark-themed interface:
 
-- **Earnings Calendar** — Interactive table of upcoming earnings across your watchlist
-- **Ticker Deep-Dive** — Click any ticker to see:
-  - Company header with earnings date and analyst estimates
-  - Sentiment gauge with bullish/bearish/neutral donut chart and bar breakdown
-  - Historical reactions chart (EPS surprise and next-day price move per quarter)
-  - Recent news headlines feed with linked cards
-  - Full Claude-generated pre-earnings brief
-- **Sidebar Controls** — Ticker search, date range slider, watchlist presets (Large-Caps, Magnificent 7, FAANG+, Semiconductors, Finance, Custom)
-- **Export** — Download any brief as a Markdown file
+**Dashboard (`/`)**
+- Hero section with animated gradient background
+- Watchlist presets: Top 30 Large-Caps, Magnificent 7, FAANG+, Semiconductors, Finance, or Custom
+- Date range controls and scan button
+- KPI metrics row (upcoming earnings count, next report, days until)
+- Interactive earnings calendar table with clickable tickers
+
+**Ticker Deep-Dive (`/ticker/AAPL`)**
+- Company header with sentiment badge (Bullish / Bearish / Neutral)
+- Metrics row: EPS estimate, revenue estimate, sentiment score, avg earnings move
+- **Sentiment tab** — Donut chart + bar chart showing bullish/bearish/neutral distribution, sample social posts
+- **Historical tab** — Grouped bar chart (EPS surprise % vs next-day move %), data table, summary stats
+- **News tab** — Styled headline cards with links, source, publication date
+- **AI Brief tab** — Generate a Claude-powered pre-earnings brief with one click, download as Markdown
 
 ## Architecture
 
 ```
 src/earnings_brief/
-├── app.py                 # Streamlit web dashboard
+├── web.py                 # Flask web application (API + page routes)
+├── templates/
+│   ├── base.html          # Dark-themed base layout with nav
+│   ├── dashboard.html     # Earnings calendar dashboard
+│   └── ticker.html        # Ticker deep-dive with tabs
+├── static/
+│   ├── css/style.css      # Glass-morphism, animations, custom dark theme
+│   └── js/
+│       ├── dashboard.js   # Calendar scanning and display logic
+│       └── ticker.js      # Research rendering, charts, brief generation
+├── app.py                 # Streamlit dashboard (alternative UI)
 ├── cli.py                 # Rich CLI interface (scan / brief / calendar)
 ├── orchestrator.py        # Main pipeline — wires all modules together
 ├── earnings_calendar.py   # Fetches upcoming earnings dates via yfinance
@@ -83,13 +99,17 @@ cp .env.example .env
 # Edit .env with your favorite editor
 ```
 
-### 4. Launch the Web Dashboard
+### 4. Launch the Web App
 
 ```bash
-streamlit run src/earnings_brief/app.py
-```
+# Option A: Flask web app (recommended — beautiful dark theme)
+earnings-brief-web
+# → Opens at http://localhost:5000
 
-Opens automatically in your browser at `http://localhost:8501`.
+# Option B: Streamlit dashboard (alternative)
+streamlit run src/earnings_brief/app.py
+# → Opens at http://localhost:8501
+```
 
 ### 5. Or Use the CLI
 
@@ -123,9 +143,18 @@ pip install -e .
 # Set API key
 export ANTHROPIC_API_KEY="sk-ant-..."  # On Windows: set ANTHROPIC_API_KEY=sk-ant-...
 
-# Run the dashboard
-streamlit run src/earnings_brief/app.py
+# Run the web app
+earnings-brief-web
+# → http://localhost:5000
 ```
+
+## Three Interfaces
+
+| Interface | Command | URL | Best For |
+|-----------|---------|-----|----------|
+| **Web App** | `earnings-brief-web` | `http://localhost:5000` | Full visual experience with charts |
+| **Streamlit** | `streamlit run src/earnings_brief/app.py` | `http://localhost:8501` | Quick data exploration |
+| **CLI** | `earnings-brief brief AAPL` | Terminal | Automation and scripting |
 
 ## CLI Commands
 
@@ -135,7 +164,7 @@ streamlit run src/earnings_brief/app.py
 | `scan [TICKERS...]`     | Find upcoming earnings and generate briefs for each    |
 | `calendar [TICKERS...]` | Display a table of upcoming earnings dates             |
 
-### Common Options
+### CLI Options
 
 | Flag             | Description                                       |
 |------------------|---------------------------------------------------|
@@ -186,6 +215,9 @@ pip install -e ".[dev]"
 
 # Run tests
 pytest tests/ -v
+
+# Run Flask in debug mode
+FLASK_DEBUG=1 earnings-brief-web
 ```
 
 ## License

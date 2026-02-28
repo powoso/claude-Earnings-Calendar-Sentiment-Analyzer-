@@ -21,6 +21,7 @@ dependencies = [
     "streamlit>=1.30.0",
     "plotly>=5.18.0",
     "pandas>=2.0.0",
+    "flask>=3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -32,9 +33,13 @@ dev = [
 
 [project.scripts]
 earnings-brief = "earnings_brief.cli:main"
+earnings-brief-web = "earnings_brief.web:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+earnings_brief = ["templates/*.html", "static/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

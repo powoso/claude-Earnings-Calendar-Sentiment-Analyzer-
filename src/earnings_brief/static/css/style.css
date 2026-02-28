@@ -1,0 +1,392 @@
+/* ================================================================
+   Earnings Brief Dashboard — Custom Styles
+   Dark-themed financial dashboard with glass-morphism cards.
+   Uses Tailwind CSS utility classes for layout, this file
+   handles custom effects that Tailwind can't express inline.
+   ================================================================ */
+
+/* ---------- Custom properties ---------- */
+:root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: rgba(17, 24, 39, 0.7);
+    --bg-glass: rgba(17, 24, 39, 0.45);
+    --border-subtle: rgba(99, 110, 250, 0.12);
+    --border-hover: rgba(99, 110, 250, 0.35);
+    --accent-blue: #636efa;
+    --accent-cyan: #22d3ee;
+    --accent-green: #00cc96;
+    --accent-red: #ef553b;
+    --accent-amber: #f59e0b;
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --glow-blue: 0 0 30px rgba(99, 110, 250, 0.15);
+    --glow-green: 0 0 20px rgba(0, 204, 150, 0.12);
+    --glow-red: 0 0 20px rgba(239, 85, 59, 0.12);
+}
+
+/* ---------- Body + scrollbar ---------- */
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 110, 250, 0.25);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 110, 250, 0.4);
+}
+
+/* ---------- Glass card ---------- */
+.glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+.glass-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--glow-blue);
+}
+
+/* Clickable card variant */
+.glass-card-clickable {
+    cursor: pointer;
+}
+.glass-card-clickable:hover {
+    transform: translateY(-2px);
+}
+
+/* ---------- Hero section ---------- */
+.hero-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #0d2137 40%, #1a1035 80%, #0f172a 100%);
+    position: relative;
+    overflow: hidden;
+}
+.hero-gradient::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(99, 110, 250, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(0, 204, 150, 0.06) 0%, transparent 50%);
+    animation: heroShimmer 20s linear infinite;
+}
+@keyframes heroShimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ---------- Gradient text ---------- */
+.gradient-text {
+    background: linear-gradient(135deg, #636efa 0%, #22d3ee 50%, #00cc96 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ---------- KPI metric card ---------- */
+.metric-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+.metric-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--glow-blue);
+}
+.metric-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-top: 0.25rem;
+}
+.metric-delta {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+.metric-delta.positive { color: var(--accent-green); }
+.metric-delta.negative { color: var(--accent-red); }
+.metric-delta.neutral  { color: var(--text-muted); }
+
+/* ---------- Badge ---------- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.badge-bullish {
+    background: rgba(0, 204, 150, 0.12);
+    color: var(--accent-green);
+    border: 1px solid rgba(0, 204, 150, 0.25);
+}
+.badge-bearish {
+    background: rgba(239, 85, 59, 0.12);
+    color: var(--accent-red);
+    border: 1px solid rgba(239, 85, 59, 0.25);
+}
+.badge-neutral {
+    background: rgba(139, 148, 158, 0.12);
+    color: var(--text-secondary);
+    border: 1px solid rgba(139, 148, 158, 0.2);
+}
+
+/* ---------- Table ---------- */
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.data-table thead th {
+    background: rgba(99, 110, 250, 0.06);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.data-table thead th:first-child {
+    border-radius: 12px 0 0 0;
+}
+.data-table thead th:last-child {
+    border-radius: 0 12px 0 0;
+}
+.data-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+.data-table tbody tr:hover {
+    background: rgba(99, 110, 250, 0.06);
+}
+.data-table tbody td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.9rem;
+}
+.data-table .ticker-cell {
+    font-weight: 700;
+    color: var(--accent-cyan);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.data-table .ticker-cell:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+/* ---------- News card ---------- */
+.news-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1.15rem 1.35rem;
+    transition: all 0.3s ease;
+}
+.news-item:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+}
+.news-item a {
+    color: #93c5fd;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.news-item a:hover {
+    color: var(--accent-cyan);
+    text-decoration: underline;
+}
+.news-meta {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+}
+.news-snippet {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin-top: 0.4rem;
+    line-height: 1.5;
+}
+
+/* ---------- Tabs ---------- */
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+.tab-btn:hover {
+    color: var(--text-secondary);
+}
+.tab-btn.active {
+    color: var(--accent-blue);
+    border-bottom-color: var(--accent-blue);
+}
+
+/* ---------- Button ---------- */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), #4f46e5);
+    color: #fff;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(99, 110, 250, 0.25);
+}
+.btn-primary:hover {
+    box-shadow: 0 4px 20px rgba(99, 110, 250, 0.45);
+    transform: translateY(-1px);
+}
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: rgba(99, 110, 250, 0.1);
+    color: var(--accent-blue);
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid rgba(99, 110, 250, 0.25);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+    background: rgba(99, 110, 250, 0.2);
+    border-color: rgba(99, 110, 250, 0.4);
+}
+
+/* ---------- Loading skeleton ---------- */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, rgba(99, 110, 250, 0.08) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(99, 110, 250, 0.2);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- Fade-in animation ---------- */
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* ---------- Brief markdown ---------- */
+.brief-content h3 {
+    color: var(--accent-cyan);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.brief-content p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+}
+.brief-content ul, .brief-content ol {
+    color: var(--text-secondary);
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.brief-content li {
+    margin-bottom: 0.35rem;
+    line-height: 1.6;
+}
+.brief-content strong {
+    color: var(--text-primary);
+}
+.brief-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+.brief-content th, .brief-content td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-subtle);
+    font-size: 0.88rem;
+}
+.brief-content th {
+    background: rgba(99, 110, 250, 0.06);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: left;
+}
+
+/* ---------- Plotly overrides ---------- */
+.js-plotly-plot .plotly .modebar {
+    right: 8px !important;
+    top: 4px !important;
+}

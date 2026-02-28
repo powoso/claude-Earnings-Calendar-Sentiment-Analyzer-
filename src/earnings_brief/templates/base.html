@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Earnings Brief{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        surface: { 900: '#0a0e17', 800: '#111827', 700: '#1f2937' },
+                        accent: { blue: '#636efa', cyan: '#22d3ee', green: '#00cc96', red: '#ef553b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
+    <!-- Marked.js for rendering markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 border-b border-white/5" style="background: rgba(10, 14, 23, 0.85); backdrop-filter: blur(20px);">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg"
+                     style="background: linear-gradient(135deg, #636efa, #00cc96);">
+                    &#x1f4ca;
+                </div>
+                <span class="text-lg font-bold gradient-text group-hover:opacity-80 transition-opacity">
+                    Earnings Brief
+                </span>
+            </a>
+            <div class="flex items-center gap-4">
+                <form id="nav-search" class="relative" onsubmit="return navSearch(event)">
+                    <input type="text" id="nav-ticker-input" placeholder="Search ticker..."
+                           class="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500
+                                  focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/25
+                                  w-48 transition-all focus:w-64"
+                           autocomplete="off" spellcheck="false">
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </form>
+                <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors font-medium">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 mt-16">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between text-xs text-gray-600">
+            <span>Earnings Brief Dashboard &mdash; Powered by Claude</span>
+            <span>Data: Yahoo Finance &middot; Google News &middot; Reddit &middot; StockTwits</span>
+        </div>
+    </footer>
+
+    <script>
+        function navSearch(e) {
+            e.preventDefault();
+            const input = document.getElementById('nav-ticker-input');
+            const ticker = input.value.trim().toUpperCase();
+            if (ticker) window.location.href = '/ticker/' + encodeURIComponent(ticker);
+            return false;
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
